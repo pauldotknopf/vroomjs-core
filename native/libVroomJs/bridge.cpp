@@ -116,7 +116,7 @@ extern "C"
         while(!V8::IdleNotification()) {};
     }
 
-    EXPORT void jscontext_dispose(JsContext* context)
+    EXPORT void CALLINGCONVENTION jscontext_dispose(JsContext* context)
     {
 #ifdef DEBUG_TRACE_API
 		std::wcout << "jscontext_dispose" << std::endl;

@@ -1,0 +1,24 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "Sandbox Console Application",
+  "authors": [ "Paul" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+
+  "dependencies": {
+    "VroomJs": ""
+  },
+
+  "commands": {
+    "Sandbox": "Sandbox"
+  },
+
+  "frameworks": {
+    "dnx451": { }
+  }
+}

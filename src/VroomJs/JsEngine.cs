@@ -64,11 +64,7 @@ namespace VroomJs {
 		}
 
 		static JsEngine() {
-			JsObjectMarshalType objectMarshalType = JsObjectMarshalType.Dictionary;
-#if NET40
-        	objectMarshalType = JsObjectMarshalType.Dynamic;
-#endif
-			js_set_object_marshal_type(objectMarshalType);
+			js_set_object_marshal_type(JsObjectMarshalType.Dynamic);
 		}
 
 		readonly HandleRef _engine;

@@ -41,7 +41,7 @@ Task("Clean")
 Task("Build")
     .Does(() =>
 {
-    ExecuteCommand("dnu restore");
+    ExecuteCommand("dnu restore \"src/VroomJs/project.json\"");
     ExecuteCommand(string.Format("dnu publish \"src/VroomJs/project.json\" --configuration \"{0}\" --no-source -o \"{1}\"", configuration, System.IO.Path.Combine(buildDir, "VroomJs")));
 });
 

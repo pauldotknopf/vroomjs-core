@@ -10,11 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "VroomJs", "src\VroomJS\VroomJs.xproj", "{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libVroomJs", "native\libVroomJs\libVroomJs.vcxproj", "{6CFA51CD-7028-4CBB-8A7A-1DFCFAA9172B}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sandbox", "src\Sandbox\Sandbox.xproj", "{3EF6E49C-C580-43B8-90F4-31F07F1067A8}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "VroomJs", "src\VroomJs\VroomJs.xproj", "{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,18 +26,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|x64.Build.0 = Debug|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|x86.Build.0 = Debug|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|x64.ActiveCfg = Release|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|x64.Build.0 = Release|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|x86.ActiveCfg = Release|Any CPU
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|x86.Build.0 = Release|Any CPU
 		{6CFA51CD-7028-4CBB-8A7A-1DFCFAA9172B}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{6CFA51CD-7028-4CBB-8A7A-1DFCFAA9172B}.Debug|x64.ActiveCfg = Debug|x64
 		{6CFA51CD-7028-4CBB-8A7A-1DFCFAA9172B}.Debug|x64.Build.0 = Debug|x64
@@ -60,12 +48,24 @@ Global
 		{3EF6E49C-C580-43B8-90F4-31F07F1067A8}.Release|x64.Build.0 = Release|Any CPU
 		{3EF6E49C-C580-43B8-90F4-31F07F1067A8}.Release|x86.ActiveCfg = Release|Any CPU
 		{3EF6E49C-C580-43B8-90F4-31F07F1067A8}.Release|x86.Build.0 = Release|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|x64.Build.0 = Debug|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Debug|x86.Build.0 = Debug|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|x64.ActiveCfg = Release|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|x64.Build.0 = Release|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|x86.ActiveCfg = Release|Any CPU
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0} = {8C87E388-CD2C-47F7-84A6-4FC247F71F6C}
 		{3EF6E49C-C580-43B8-90F4-31F07F1067A8} = {8C87E388-CD2C-47F7-84A6-4FC247F71F6C}
+		{DC573D21-6ACC-4CA0-B4DF-06BB8F4F6EA0} = {8C87E388-CD2C-47F7-84A6-4FC247F71F6C}
 	EndGlobalSection
 EndGlobal

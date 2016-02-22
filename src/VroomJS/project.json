@@ -1,10 +1,17 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "VroomJS Class Library",
+  "description": "VroomJs Class Library",
   "authors": [ "Paul" ],
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
+
+  "resource": [
+    "../../native/compiled/v8-x86.dll",
+    "../../native/compiled/v8-x64.dll",
+    "../../native/compiled/VroomJsNative-x86.dll",
+    "../../native/compiled/VroomJsNative-x64.dll"
+  ],
 
   "frameworks": {
     "dnx451": { }

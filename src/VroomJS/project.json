@@ -1,6 +1,6 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "VroomJs Class Library",
+  "description": "VroomJs for .NET",
   "authors": [ "Paul" ],
   "tags": [ "" ],
   "projectUrl": "",

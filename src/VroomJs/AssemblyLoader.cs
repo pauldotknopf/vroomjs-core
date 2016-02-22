@@ -68,8 +68,21 @@ namespace VroomJs
                 if (_isLoaded) return;
                 _isLoaded = true;
 
-                LoadDll("v8", "x86");
-                LoadDll("VroomJsNative", "x86");
+                if(IntPtr.Size == 4)
+                {
+                    LoadDll("v8", "x86");
+                    LoadDll("VroomJsNative", "x86");
+                }
+                else if(IntPtr.Size == 8)
+                {
+                    LoadDll("v8", "x64");
+                    LoadDll("VroomJsNative", "x64");
+                }
+                else
+                {
+                    // THE FUTURE!
+                    throw new Exception("Unknown pointer size " + IntPtr.Size);
+                }
             }
         }
     }

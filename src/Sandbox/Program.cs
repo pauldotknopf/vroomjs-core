@@ -53,14 +53,11 @@ namespace Sandbox
                     {
                         context.SetVariable("Debug", typeof(debugtest));
                         object result = context.Execute("Debug.BoolTest(3,4);");
-
                     }
                     GC.Collect();
                     js.DumpHeapStats();
                 }
             }
-
-            Console.ReadLine();
         }
     }
 }

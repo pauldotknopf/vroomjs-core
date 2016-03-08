@@ -37,13 +37,18 @@ namespace VroomJs
 			string message = (string)convert.FromJsValue(error.Message);
 			int line = error.Line;
 			int column = error.Column + 1; // because zero based.
-			JsObject nativeException = (JsObject)convert.FromJsValue(error.Exception);
+			//
 
 			JsException exception;
-			if (type == "SyntaxError") {
+
+            if(error.Exception.Type == JsValueType.String)
+            {
+                exception = new JsException(type, resource, message, line, column, null);
+            }else if(type == "SyntaxError") {
 				exception = new JsSyntaxError(type, resource, message, line, column);
 			} else {
-				exception = new JsException(type, resource, message, line, column, nativeException);
+                JsObject nativeException = (JsObject)convert.FromJsValue(error.Exception);
+                exception = new JsException(type, resource, message, line, column, nativeException);
 			}
 			return exception;
 		}

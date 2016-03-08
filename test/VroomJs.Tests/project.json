@@ -1,0 +1,23 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "VroomJs.Tests Class Library",
+  "authors": [ "Paul" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "frameworks": {
+    "dnx451": { }
+  },
+
+  "dependencies": {
+    "VroomJs": "1.0.1",
+    "xunit": "2.1.0-*",
+    "xunit.runner.dnx": "2.1.0-*",
+    "FluentAssertions": "4.1.1"
+  },
+
+  "commands": {
+    "test": "VroomJs.Tests"
+  }
+}

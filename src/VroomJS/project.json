@@ -1,10 +1,13 @@
 ﻿{
-  "version": "1.0.0-*",
-  "description": "VroomJs for .NET",
+  "version": "1.0.1",
+  "title": "VroomJs",
+  "description": "VroomJs for the newer .NET environments (dnx451, net451). dnxcore50 support TBD.",
+  "summary": "VroomJs for the newer .NET environments (dnx451, net451). dnxcore50 support TBD.",
   "authors": [ "Paul" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "tags": [ "JavaScript", "V8" ],
+  "projectUrl": "https://github.com/pauldotknopf/vroomjs-core",
+  "licenseUrl": "https://github.com/pauldotknopf/vroomjs-core/blob/master/LICENSE",
+  "copyright": "2016",
 
   "resource": [
     "../../native/compiled/v8-x86.dll",

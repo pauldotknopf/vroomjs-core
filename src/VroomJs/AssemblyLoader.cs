@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace VroomJs
 {
@@ -17,7 +15,7 @@ namespace VroomJs
 
         private static void LoadDll(string dllName, string architecture)
         {
-            var dirName = Path.Combine(Path.GetTempPath(), "VroomJs." + typeof(AssemblyLoader).Assembly.GetName().Version.ToString());
+            var dirName = Path.Combine(Path.GetTempPath(), "VroomJs");
 
             if (!Directory.Exists(dirName))
                 Directory.CreateDirectory(dirName);
@@ -29,7 +27,7 @@ namespace VroomJs
 
             var dllPath = Path.Combine(dirName, dllName + ".dll");
 
-            using (Stream stm = typeof(JsContext).Assembly.GetManifestResourceStream("VroomJs." + dllName + "-" + architecture + ".dll"))
+            using (Stream stm = typeof(JsEngine).GetTypeInfo().Assembly.GetManifestResourceStream("VroomJs." + dllName + "-" + architecture + ".dll"))
             {
                 try
                 {

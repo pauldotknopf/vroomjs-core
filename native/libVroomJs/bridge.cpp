@@ -92,6 +92,7 @@ extern "C"
 
 	EXPORT void CALLINGCONVENTION jsengine_dispose(JsEngine* engine)
     {
+		DebugBreak();
 #ifdef DEBUG_TRACE_API
 		std::wcout << "jsengine_dispose" << std::endl;
 #endif

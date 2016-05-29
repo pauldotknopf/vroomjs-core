@@ -39,4 +39,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\vendor\v8\x86\v8.dll" />
+  </ItemGroup>
 </Project>

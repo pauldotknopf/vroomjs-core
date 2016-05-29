@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Sandbox
 {
     public class Program
@@ -9,8 +11,13 @@ namespace Sandbox
 
             while (true)
             {
+                GC.Collect(GC.MaxGeneration);
                 using (var engine = new VroomJs.JsEngine())
                 {
+                    using (var context = engine.CreateContext())
+                    {
+                        engine.DumpHeapStats();
+                    }
                     engine.DumpHeapStats();
                 }
             }

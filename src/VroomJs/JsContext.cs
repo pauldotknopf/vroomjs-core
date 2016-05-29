@@ -88,6 +88,20 @@ namespace VroomJs
             // TODO: Check the result of the operation for errors.
         }
 
+        public object Execute(string code, string name = null, TimeSpan? executionTimeout = null)
+        {
+            if (code == null)
+                throw new ArgumentNullException("code");
+
+            CheckDisposed();
+            
+            var v = Native.jscontext_execute(_context, code, name ?? "<Unnamed Script>");
+            var result = _convert.FromJsValue(v);
+            Native.jsvalue_dispose(v);
+
+            return result;
+        }
+
         #region Keep-alive management and callbacks.
 
         internal int KeepAliveAdd(object obj)

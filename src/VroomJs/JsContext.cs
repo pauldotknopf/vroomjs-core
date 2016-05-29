@@ -55,6 +55,39 @@ namespace VroomJs
             throw new NotImplementedException();
         }
 
+        public object GetVariable(string name)
+        {
+            if (name == null)
+                throw new ArgumentNullException("name");
+
+            CheckDisposed();
+
+            JsValue v = Native.jscontext_get_variable(_context, name);
+            object res = _convert.FromJsValue(v);
+
+            Native.jsvalue_dispose(v);
+
+            Exception e = res as JsException;
+            if (e != null)
+                throw e;
+            return res;
+        }
+
+        public void SetVariable(string name, object value)
+        {
+            if (name == null)
+                throw new ArgumentNullException("name");
+
+            CheckDisposed();
+
+            JsValue a = _convert.ToJsValue(value);
+            JsValue b = Native.jscontext_set_variable(_context, name, a);
+
+            Native.jsvalue_dispose(a);
+            Native.jsvalue_dispose(b);
+            // TODO: Check the result of the operation for errors.
+        }
+
         #region Keep-alive management and callbacks.
 
         internal int KeepAliveAdd(object obj)

@@ -16,6 +16,9 @@ namespace Sandbox
                 {
                     using (var context = engine.CreateContext())
                     {
+                        context.SetVariable("name", "value");
+                        var result = context.GetVariable("name");
+
                         engine.DumpHeapStats();
                     }
                     engine.DumpHeapStats();

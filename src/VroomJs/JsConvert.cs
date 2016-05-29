@@ -116,9 +116,9 @@ namespace VroomJs
             Type type = obj.GetType();
 
             // Check for nullable types (we will cast the value out of the box later).
-
+            
             // TODO: type.IsConstructedGenericType &&
-            if ( type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 type = type.GenericTypeArguments[0];
 
             if (type == typeof(Boolean))

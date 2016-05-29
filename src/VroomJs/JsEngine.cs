@@ -38,39 +38,73 @@ namespace VroomJs {
         
 		private JsValue KeepAliveValueOf(int contextId, int slot)
         {
-            return JsValue.Null;
+            JsContext context;
+            if (!_aliveContexts.TryGetValue(contextId, out context))
+            {
+                throw new Exception("fail");
+            }
+            return context.KeepAliveValueOf(slot);
         }
 		
 		private JsValue KeepAliveInvoke(int contextId, int slot, JsValue args)
         {
-            return JsValue.Null;
+            JsContext context;
+            if (!_aliveContexts.TryGetValue(contextId, out context))
+            {
+                throw new Exception("fail");
+            }
+            return context.KeepAliveInvoke(slot, args);
         }
 
 		private JsValue KeepAliveSetPropertyValue(int contextId, int slot, string name, JsValue value)
         {
-            return JsValue.Null;
+            JsContext context;
+            if (!_aliveContexts.TryGetValue(contextId, out context))
+            {
+                throw new Exception("fail");
+            }
+            return context.KeepAliveSetPropertyValue(slot, name, value);
         }
-
-		
+        
 		private JsValue KeepAliveGetPropertyValue(int contextId, int slot, string name)
         {
-            return JsValue.Null;
+            JsContext context;
+            if (!_aliveContexts.TryGetValue(contextId, out context))
+            {
+                throw new Exception("fail");
+            }
+            return context.KeepAliveGetPropertyValue(slot, name);
         }
 
 		private JsValue KeepAliveDeleteProperty(int contextId, int slot, string name)
         {
-            return JsValue.Null;
+            JsContext context;
+            if (!_aliveContexts.TryGetValue(contextId, out context))
+            {
+                throw new Exception("fail");
+            }
+            return context.KeepAliveDeleteProperty(slot, name);
         }
 
 		private JsValue KeepAliveEnumerateProperties(int contextId, int slot)
         {
-            return JsValue.Null;
-		}
+            JsContext context;
+            if (!_aliveContexts.TryGetValue(contextId, out context))
+            {
+                throw new Exception("fail");
+            }
+            return context.KeepAliveEnumerateProperties(slot);
+        }
 
 		private void KeepAliveRemove(int contextId, int slot)
         {
-
-		}
+            JsContext context;
+            if (!_aliveContexts.TryGetValue(contextId, out context))
+            {
+                return;
+            }
+            context.KeepAliveRemove(slot);
+        }
 
         public void TerminateExecution()
         {

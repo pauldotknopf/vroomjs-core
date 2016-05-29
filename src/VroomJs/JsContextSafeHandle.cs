@@ -5,8 +5,6 @@ namespace VroomJs
 {
     public class JsContextSafeHandle : SafeHandle
     {
-        JsEngineSafeHandle _engine;
-
         public JsContextSafeHandle(JsEngineSafeHandle engine, int id)
             :base(IntPtr.Zero, true)
         {

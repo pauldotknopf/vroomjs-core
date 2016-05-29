@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -158,21 +159,7 @@ namespace VroomJs
                     Type = JsValueType.Date,
                     Num = Convert.ToInt64(((DateTime)obj).Subtract(EPOCH).TotalMilliseconds) /*(((DateTime)obj).Ticks - 621355968000000000.0 + 26748000000000.0)/10000.0*/
                 };
-
-            // Arrays of anything that can be cast to object[] are recursively convertef after
-            // allocating an appropriate jsvalue on the unmanaged side.
-
-            var array = obj as object[];
-            if (array != null)
-            {
-                JsValue v = Native.jsvalue_alloc_array(array.Length);
-                if (v.Length != array.Length)
-                    throw new JsInteropException("can't allocate memory on the unmanaged side");
-                for (int i = 0; i < array.Length; i++)
-                    Marshal.StructureToPtr(ToJsValue(array[i]), new IntPtr(v.Ptr.ToInt64() + (16 * i)), false);
-                return v;
-            }
-
+            
             // Every object explicitly converted to a value becomes an entry of the
             // _keepalives list, to make sure the GC won't collect it while still in
             // use by the unmanaged Javascript engine. We don't try to track duplicates

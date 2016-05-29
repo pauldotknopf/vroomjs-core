@@ -6,18 +6,7 @@ using System.Threading;
 namespace VroomJs {
 	public class JsEngine : IDisposable {
 
-		
-		
-		// Make sure the delegates we pass to the C++ engine won't fly away during a GC.
-		readonly Native.KeepaliveRemoveDelegate _keepalive_remove;
-		readonly Native.KeepAliveGetPropertyValueDelegate _keepalive_get_property_value;
-		readonly Native.KeepAliveSetPropertyValueDelegate _keepalive_set_property_value;
-		readonly Native.KeepAliveValueOfDelegate _keepalive_valueof;
-		readonly Native.KeepAliveInvokeDelegate _keepalive_invoke;
-		readonly Native.KeepAliveDeletePropertyDelegate _keepalive_delete_property;
-		readonly Native.KeepAliveEnumeratePropertiesDelegate _keepalive_enumerate_properties;
-
-		//private readonly Dictionary<int, JsContext> _aliveContexts = new Dictionary<int, JsContext>();
+		private readonly Dictionary<int, JsContext> _aliveContexts = new Dictionary<int, JsContext>();
 		//private readonly Dictionary<int, JsScript> _aliveScripts = new Dictionary<int, JsScript>();
 
 		private int _currentContextId = 0;
@@ -34,24 +23,15 @@ namespace VroomJs {
 		readonly JsEngineSafeHandle _engine;
 
 		public JsEngine(int maxYoungSpace = -1, int maxOldSpace = -1) {
-			_keepalive_remove = new Native.KeepaliveRemoveDelegate(KeepAliveRemove);
-			_keepalive_get_property_value = new Native.KeepAliveGetPropertyValueDelegate(KeepAliveGetPropertyValue);
-			_keepalive_set_property_value = new Native.KeepAliveSetPropertyValueDelegate(KeepAliveSetPropertyValue);
-			_keepalive_valueof = new Native.KeepAliveValueOfDelegate(KeepAliveValueOf);
-			_keepalive_invoke = new Native.KeepAliveInvokeDelegate(KeepAliveInvoke);
-			_keepalive_delete_property = new Native.KeepAliveDeletePropertyDelegate(KeepAliveDeleteProperty);
-			_keepalive_enumerate_properties = new Native.KeepAliveEnumeratePropertiesDelegate(KeepAliveEnumerateProperties);
-            
-            _engine = new JsEngineSafeHandle(Native.jsengine_new(
-                _keepalive_remove,
-                _keepalive_get_property_value,
-                _keepalive_set_property_value,
-                _keepalive_valueof,
-                _keepalive_invoke,
-                _keepalive_delete_property,
-                _keepalive_enumerate_properties,
+            _engine = new JsEngineSafeHandle(KeepAliveRemove,
+                KeepAliveGetPropertyValue,
+                KeepAliveSetPropertyValue,
+                KeepAliveValueOf,
+                KeepAliveInvoke,
+                KeepAliveDeleteProperty,
+                KeepAliveEnumerateProperties,
                 maxYoungSpace,
-                maxOldSpace));
+                maxOldSpace);
         }
 
         public void TerminateExecution() {
@@ -90,8 +70,21 @@ namespace VroomJs {
 		private void KeepAliveRemove(int contextId, int slot) {
 
 		}
-        
-		#region IDisposable implementation
+
+        public JsContext CreateContext()
+        {
+            int id = Interlocked.Increment(ref _currentContextId);
+            JsContext ctx = new JsContext(id, this, _engine, ContextDisposed);
+            _aliveContexts.Add(id, ctx);
+            return ctx;
+        }
+
+        private void ContextDisposed(int id)
+        {
+            _aliveContexts.Remove(id);
+        }
+
+        #region IDisposable implementation
 
         public void Dispose()
         {

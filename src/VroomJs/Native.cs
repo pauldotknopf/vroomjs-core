@@ -42,5 +42,41 @@ namespace VroomJs
 
         [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
         public static extern void jsengine_dispose(IntPtr engine);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern IntPtr jscontext_new(int id, JsEngineSafeHandle engine);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern void jscontext_dispose(IntPtr context);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern void jscontext_force_gc();
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
+        public static extern JsValue jscontext_execute(JsContextSafeHandle context, [MarshalAs(UnmanagedType.LPWStr)] string str, [MarshalAs(UnmanagedType.LPWStr)] string name);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
+        public static extern JsValue jscontext_execute_script(JsContextSafeHandle context, ScriptSafeHandle script);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern JsValue jscontext_get_global(JsEngineSafeHandle engine);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern JsValue jscontext_get_variable(JsEngineSafeHandle engine, [MarshalAs(UnmanagedType.LPWStr)] string name);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern JsValue jscontext_set_variable(JsEngineSafeHandle engine, [MarshalAs(UnmanagedType.LPWStr)] string name, JsValue value);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern JsValue jsvalue_alloc_string([MarshalAs(UnmanagedType.LPWStr)] string str);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern JsValue jsvalue_alloc_array(int length);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern void jsvalue_dispose(JsValue value);
+
+        [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
+        public static extern JsValue jscontext_invoke(JsEngineSafeHandle engine, IntPtr funcPtr, IntPtr thisPtr, JsValue args);
     }
 }

@@ -13,6 +13,11 @@ namespace VroomJs
         readonly Native.KeepAliveDeletePropertyDelegate _keepalive_delete_property;
         readonly Native.KeepAliveEnumeratePropertiesDelegate _keepalive_enumerate_properties;
 
+        internal JsEngineSafeHandle() :base(IntPtr.Zero, true)
+        {
+            SetHandle(IntPtr.Zero);
+        }
+
         internal JsEngineSafeHandle(Native.KeepaliveRemoveDelegate keepaliveRemove,
             Native.KeepAliveGetPropertyValueDelegate keepaliveGetPropertyValue,
             Native.KeepAliveSetPropertyValueDelegate keepaliveSetPropertyValue,
@@ -43,7 +48,7 @@ namespace VroomJs
                 maxYoungSpace,
                 maxOldSpace));
         }
-
+        
         public override bool IsInvalid
         {
             get

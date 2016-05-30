@@ -89,15 +89,15 @@ namespace VroomJs
         internal static extern IntPtr jsscript_dispose(JsScriptSafeHandle script);
 
         [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static extern JsValue jscontext_get_property_names(JsContextSafeHandle context, IntPtr ptr);
+        internal static extern JsValue jscontext_get_property_names(JsContextSafeHandle context, IntPtr ptr);
 
         [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-        static extern JsValue jscontext_get_property_value(JsContextSafeHandle context, IntPtr ptr, [MarshalAs(UnmanagedType.LPWStr)] string name);
+        internal static extern JsValue jscontext_get_property_value(JsContextSafeHandle context, IntPtr ptr, [MarshalAs(UnmanagedType.LPWStr)] string name);
 
         [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-        static extern JsValue jscontext_set_property_value(JsContextSafeHandle context, IntPtr ptr, [MarshalAs(UnmanagedType.LPWStr)] string name, JsValue value);
+        internal static extern JsValue jscontext_set_property_value(JsContextSafeHandle context, IntPtr ptr, [MarshalAs(UnmanagedType.LPWStr)] string name, JsValue value);
 
         [DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-        static extern JsValue jscontext_invoke_property(JsContextSafeHandle context, IntPtr ptr, [MarshalAs(UnmanagedType.LPWStr)] string name, JsValue args);
+        internal static extern JsValue jscontext_invoke_property(JsContextSafeHandle context, IntPtr ptr, [MarshalAs(UnmanagedType.LPWStr)] string name, JsValue args);
     }
 }

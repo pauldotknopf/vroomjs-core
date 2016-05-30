@@ -130,6 +130,17 @@ namespace VroomJs {
             _aliveContexts.Remove(id);
         }
 
+        public void DisposeObject(IntPtr ptr)
+        {
+            // If the engine has already been explicitly disposed we pass Zero as
+            // the first argument because we need to free the memory allocated by
+            // "new" but not the object on the V8 heap: it has already been freed.
+            if (_disposed)
+                Native.jsengine_dispose_object(new JsEngineSafeHandle(), ptr);
+            else
+                Native.jsengine_dispose_object(_engine, ptr);
+        }
+
         #region IDisposable implementation
 
         private void CheckDisposed()

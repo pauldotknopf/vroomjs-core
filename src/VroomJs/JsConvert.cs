@@ -91,7 +91,7 @@ namespace VroomJs
                     }
                     return new JsException(msg, inner);
                 case JsValueType.Wrapped:
-                    throw new NotImplementedException();
+                    return new JsObject(_context, v.Ptr);
                 case JsValueType.Error:
                     throw new NotImplementedException();
                     //return JsException.Create(this, (JsError)Marshal.PtrToStructure(v.Ptr, typeof(JsError)));

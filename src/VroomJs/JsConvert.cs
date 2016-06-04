@@ -93,8 +93,7 @@ namespace VroomJs
                 case JsValueType.Wrapped:
                     return new JsObject(_context, v.Ptr);
                 case JsValueType.Error:
-                    throw new NotImplementedException();
-                    //return JsException.Create(this, (JsError)Marshal.PtrToStructure(v.Ptr, typeof(JsError)));
+                    return JsException.Create(this, (JsError)Marshal.PtrToStructure(v.Ptr, typeof(JsError)));
 
                 case JsValueType.Function:
                     var fa = new JsValue[2];
@@ -102,8 +101,7 @@ namespace VroomJs
                     {
                         fa[i] = (JsValue)Marshal.PtrToStructure(new IntPtr(v.Ptr.ToInt64() + (16 * i)), typeof(JsValue));
                     }
-                    throw new NotImplementedException();
-                    //return new JsFunction(_context, fa[0].Ptr, fa[1].Ptr);
+                    return new JsFunction(_context, fa[0].Ptr, fa[1].Ptr);
                 default:
                     throw new InvalidOperationException("unknown type code: " + v.Type);
             }
@@ -118,7 +116,6 @@ namespace VroomJs
 
             // Check for nullable types (we will cast the value out of the box later).
             
-            // TODO: type.IsConstructedGenericType &&
             if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 type = type.GenericTypeArguments[0];
 

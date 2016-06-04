@@ -35,7 +35,19 @@ namespace VroomJs
 
         internal JsValue KeepAliveValueOf(int slot)
         {
-            throw new NotImplementedException();
+            var obj = KeepAliveGet(slot);
+            if (obj != null)
+            {
+                Type type = obj.GetType();
+                MethodInfo mi = type.GetMethod("valueOf") ?? type.GetMethod("ValueOf");
+                if (mi != null)
+                {
+                    object result = mi.Invoke(obj, new object[0]);
+                    return _convert.ToJsValue(result);
+                }
+                return _convert.ToJsValue(obj);
+            }
+            return JsValue.Error(KeepAliveAdd(new IndexOutOfRangeException("invalid keepalive slot: " + slot)));
         }
 
         internal JsValue KeepAliveInvoke(int slot, JsValue args)

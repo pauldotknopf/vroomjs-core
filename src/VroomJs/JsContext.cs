@@ -40,12 +40,103 @@ namespace VroomJs
 
         internal JsValue KeepAliveInvoke(int slot, JsValue args)
         {
-            throw new NotImplementedException();
+            var obj = KeepAliveGet(slot);
+            if (obj != null)
+            {
+                Type constructorType = obj as Type;
+                if (constructorType != null)
+                {
+                    object[] constructorArgs = (object[])_convert.FromJsValue(args);
+                    return _convert.ToJsValue(Activator.CreateInstance(constructorType, constructorArgs));
+                }
+
+                WeakDelegate func = obj as WeakDelegate;
+                if (func == null)
+                {
+                    throw new Exception("not a function.");
+                }
+
+                Type type = func.Target != null ? func.Target.GetType() : func.Type;
+                object[] a = (object[])_convert.FromJsValue(args);
+
+                BindingFlags flags = BindingFlags.Public | BindingFlags.FlattenHierarchy;
+
+                if (func.Target != null)
+                {
+                    flags |= BindingFlags.Instance;
+                }
+                else
+                {
+                    flags |= BindingFlags.Static;
+                }
+
+                if (obj is BoundWeakDelegate)
+                {
+                    flags |= BindingFlags.NonPublic;
+                }
+
+                // need to convert methods from JsFunction's into delegates?
+                if (a.Any(z => z != null && z.GetType() == typeof(JsFunction)))
+                {
+                    CheckAndResolveJsFunctions(type, func.MethodName, flags, a);
+                }
+
+                try
+                {
+                    var result = type.GetMethod(func.MethodName, flags).Invoke(func.Target, a);
+                    return _convert.ToJsValue(result);
+                }
+                catch (TargetInvocationException e)
+                {
+                    return JsValue.Error(KeepAliveAdd(e.InnerException));
+                }
+                catch (Exception e)
+                {
+                    return JsValue.Error(KeepAliveAdd(e));
+                }
+            }
+
+            return JsValue.Error(KeepAliveAdd(new IndexOutOfRangeException("invalid keepalive slot: " + slot)));
         }
 
         internal JsValue KeepAliveSetPropertyValue(int slot, string name, JsValue value)
         {
-            throw new NotImplementedException();
+            var obj = KeepAliveGet(slot);
+            if (obj != null)
+            {
+                Type type;
+                if (obj is Type)
+                {
+                    type = (Type)obj;
+                }
+                else
+                {
+                    type = obj.GetType();
+                }
+                try
+                {
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        var upperCamelCase = Char.ToUpper(name[0]) + name.Substring(1);
+                        if (TrySetMemberValue(type, obj, upperCamelCase, value))
+                        {
+                            return JsValue.Null;
+                        }
+                        if (TrySetMemberValue(type, obj, name, value))
+                        {
+                            return JsValue.Null;
+                        }
+                    }
+
+                    return JsValue.Error(KeepAliveAdd(new InvalidOperationException(string.Format("property not found on {0}: {1} ", type, name))));
+                }
+                catch (Exception e)
+                {
+                    return JsValue.Error(KeepAliveAdd(e));
+                }
+            }
+
+            return JsValue.Error(KeepAliveAdd(new IndexOutOfRangeException("invalid keepalive slot: " + slot)));
         }
 
         internal JsValue KeepAliveGetPropertyValue(int slot, string name)
@@ -247,26 +338,26 @@ namespace VroomJs
                 return true;
             }
 
-            //// Then with an instance method: the problem is that we don't have a list of
-            //// parameter types so we just check if any method with the given name exists
-            //// and then keep alive a "weak delegate", i.e., just a name and the target.
-            //// The real method will be resolved during the invokation itself.
-            //BindingFlags mFlags = flags | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy;
+            // Then with an instance method: the problem is that we don't have a list of
+            // parameter types so we just check if any method with the given name exists
+            // and then keep alive a "weak delegate", i.e., just a name and the target.
+            // The real method will be resolved during the invokation itself.
+            BindingFlags mFlags = flags | BindingFlags.FlattenHierarchy;
 
-            //// TODO: This is probably slooow.
-            //if (type.GetMethods(mFlags).Any(x => x.Name == name))
-            //{
-            //    if (type == obj)
-            //    {
-            //        result = new WeakDelegate(type, name);
-            //    }
-            //    else
-            //    {
-            //        result = new WeakDelegate(obj, name);
-            //    }
-            //    value = _convert.ToJsValue(result);
-            //    return true;
-            //}
+            // TODO: This is probably slooow.
+            if (type.GetMethods(mFlags).Any(x => x.Name == name))
+            {
+                if (type == obj)
+                {
+                    result = new WeakDelegate(type, name);
+                }
+                else
+                {
+                    result = new WeakDelegate(obj, name);
+                }
+                value = _convert.ToJsValue(result);
+                return true;
+            }
 
             value = JsValue.Null;
             return false;
@@ -357,6 +448,77 @@ namespace VroomJs
                 a = _convert.ToJsValue(args);
 
             JsValue v = Native.jscontext_invoke_property(_context, obj.Handle, name, a);
+            object res = _convert.FromJsValue(v);
+            Native.jsvalue_dispose(v);
+            Native.jsvalue_dispose(a);
+
+            Exception e = res as JsException;
+            if (e != null)
+                throw e;
+            return res;
+        }
+
+        internal bool TrySetMemberValue(Type type, object obj, string name, JsValue value)
+        {
+            // dictionaries.
+            if (typeof(IDictionary).IsAssignableFrom(type))
+            {
+                IDictionary dictionary = (IDictionary)obj;
+                dictionary[name] = _convert.FromJsValue(value);
+                return true;
+            }
+
+            BindingFlags flags;
+            if (type == obj)
+            {
+                flags = BindingFlags.Public | BindingFlags.Static;
+            }
+            else
+            {
+                flags = BindingFlags.Public | BindingFlags.Instance;
+            }
+
+            PropertyInfo pi = type.GetProperty(name, flags);
+            if (pi != null && pi.CanWrite)
+            {
+                pi.SetValue(obj, _convert.FromJsValue(value), null);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static void CheckAndResolveJsFunctions(Type type, string methodName, BindingFlags flags, object[] args)
+        {
+            MethodInfo mi = type.GetMethod(methodName, flags);
+            ParameterInfo[] paramTypes = mi.GetParameters();
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (i >= paramTypes.Length)
+                {
+                    continue;
+                }
+                if (args[i] != null && args[i].GetType() == typeof(JsFunction))
+                {
+                    JsFunction function = (JsFunction)args[i];
+                    args[i] = function.MakeDelegate(paramTypes[i].ParameterType, args);
+                }
+            }
+        }
+
+        public object Invoke(IntPtr funcPtr, IntPtr thisPtr, object[] args)
+        {
+            CheckDisposed();
+
+            if (funcPtr == IntPtr.Zero)
+                throw new JsInteropException("wrapped V8 function is empty (IntPtr is Zero)");
+
+            JsValue a = JsValue.Null; // Null value unless we're given args.
+            if (args != null)
+                a = _convert.ToJsValue(args);
+
+            JsValue v = Native.jscontext_invoke(_context, funcPtr, thisPtr, a);
             object res = _convert.FromJsValue(v);
             Native.jsvalue_dispose(v);
             Native.jsvalue_dispose(a);

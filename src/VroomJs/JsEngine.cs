@@ -33,16 +33,16 @@ namespace VroomJs {
 		);
 		
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static extern void jsengine_terminate_execution(HandleRef engine);
+		static extern void jsengine_terminate_execution(IntPtr engine);
 			
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static extern void jsengine_dump_heap_stats(HandleRef engine);
+		static extern void jsengine_dump_heap_stats(IntPtr engine);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static extern void jsengine_dispose(HandleRef engine);
+		static extern void jsengine_dispose(IntPtr engine);
 
 		[DllImport("VroomJsNative")]
-		static extern void jsengine_dispose_object(HandleRef engine, IntPtr obj);
+		static extern void jsengine_dispose_object(IntPtr engine, IntPtr obj);
 		
 		// Make sure the delegates we pass to the C++ engine won't fly away during a GC.
 		readonly KeepaliveRemoveDelegate _keepalive_remove;
@@ -67,7 +67,7 @@ namespace VroomJs {
 			js_set_object_marshal_type(JsObjectMarshalType.Dynamic);
 		}
 
-		readonly HandleRef _engine;
+		readonly IntPtr _engine;
 
 		public JsEngine(int maxYoungSpace = -1, int maxOldSpace = -1) {
 			_keepalive_remove = new KeepaliveRemoveDelegate(KeepAliveRemove);
@@ -78,7 +78,7 @@ namespace VroomJs {
 			_keepalive_delete_property = new KeepAliveDeletePropertyDelegate(KeepAliveDeleteProperty);
 			_keepalive_enumerate_properties = new KeepAliveEnumeratePropertiesDelegate(KeepAliveEnumerateProperties);
 			
-			_engine = new HandleRef(this, jsengine_new(
+			_engine = jsengine_new(
 				_keepalive_remove,
 				_keepalive_get_property_value,
 				_keepalive_set_property_value, 
@@ -87,7 +87,7 @@ namespace VroomJs {
 				_keepalive_delete_property,
 				_keepalive_enumerate_properties,
 				maxYoungSpace, 
-				maxOldSpace));
+				maxOldSpace);
 		}
 
 		public void TerminateExecution() {
@@ -103,7 +103,7 @@ namespace VroomJs {
 			// the first argument because we need to free the memory allocated by
 			// "new" but not the object on the V8 heap: it has already been freed.
 			if (_disposed)
-				jsengine_dispose_object(new HandleRef(this, IntPtr.Zero), ptr);
+				jsengine_dispose_object(IntPtr.Zero, ptr);
 			else
 				jsengine_dispose_object(_engine, ptr);
 		}
@@ -249,7 +249,7 @@ namespace VroomJs {
         void CheckDisposed()
         {
             if (_disposed)
-               throw new ObjectDisposedException("JsEngine:" + _engine.Handle);
+               throw new ObjectDisposedException("JsEngine:" + _engine);
         }
 
         ~JsEngine()

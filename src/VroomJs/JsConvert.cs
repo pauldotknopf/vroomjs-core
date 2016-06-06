@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace VroomJs
@@ -129,7 +130,7 @@ namespace VroomJs
 
             // Check for nullable types (we will cast the value out of the box later).
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 type = type.GetGenericArguments()[0];
 
             if (type == typeof(Boolean))

@@ -4,14 +4,14 @@ using System.Runtime.InteropServices;
 namespace VroomJs {
 	public class JsScript : IDisposable {
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static extern IntPtr jsscript_new(HandleRef engine);
+		static extern IntPtr jsscript_new(IntPtr engine);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
-		static extern JsValue jsscript_compile(HandleRef script, [MarshalAs(UnmanagedType.LPWStr)] string str,
+		static extern JsValue jsscript_compile(IntPtr script, [MarshalAs(UnmanagedType.LPWStr)] string str,
 													  [MarshalAs(UnmanagedType.LPWStr)] string name);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		public static extern IntPtr jsscript_dispose(HandleRef script);
+		public static extern IntPtr jsscript_dispose(IntPtr script);
 
 		private readonly int _id;
 		private readonly JsEngine _engine;
@@ -20,18 +20,18 @@ namespace VroomJs {
 			get { return _engine; }
 		}
 
-		private readonly HandleRef _script;
+		private readonly IntPtr _script;
 
-		internal HandleRef Handle {
+		internal IntPtr Handle {
 			get { return _script; }
 		}
 
-		internal JsScript(int id, JsEngine engine, HandleRef engineHandle, JsConvert convert, string code, string name, Action<int> notifyDispose) {
+		internal JsScript(int id, JsEngine engine, IntPtr engineHandle, JsConvert convert, string code, string name, Action<int> notifyDispose) {
 			_id = id;
 			_engine = engine;
 			_notifyDispose = notifyDispose;
 
-			_script = new HandleRef(this, jsscript_new(engineHandle));
+			_script = jsscript_new(engineHandle);
 			
 			JsValue v = jsscript_compile(_script, code, name);
 			object res = convert.FromJsValue(v);
@@ -70,7 +70,7 @@ namespace VroomJs {
 				throw new ObjectDisposedException("JsScript: engine has been disposed");
 			}
 			if (_disposed)
-				throw new ObjectDisposedException("JsScript:" + _script.Handle);
+				throw new ObjectDisposedException("JsScript:" + _script);
 		}
 
 		~JsScript() {

@@ -6,6 +6,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var versionPrefix = Argument("versionPrefix", "");
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -18,7 +19,10 @@ var distDir=System.IO.Path.Combine(baseDir, "dist");
 var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
 if(isRunningOnAppVeyor)
     buildNumber = AppVeyor.Environment.Build.Number;
-System.Environment.SetEnvironmentVariable("DNX_BUILD_VERSION", buildNumber.ToString(), System.EnvironmentVariableTarget.Process);
+var version = buildNumber.ToString();
+if(!string.IsNullOrEmpty(versionPrefix))
+  version = versionPrefix + "-" + version;
+System.Environment.SetEnvironmentVariable("DOTNET_BUILD_VERSION", version, System.EnvironmentVariableTarget.Process);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -27,8 +31,7 @@ System.Environment.SetEnvironmentVariable("DNX_BUILD_VERSION", buildNumber.ToStr
 Task("EnsureDependencies")
     .Does(() =>
 {
-    EnsureTool("dnx", "--version");
-    EnsureTool("dnu", "--version");
+    EnsureTool("dotnet", "--version");
 });
 
 Task("Clean")
@@ -41,8 +44,8 @@ Task("Clean")
 Task("Build")
     .Does(() =>
 {
-    ExecuteCommand("dnu restore \"src/VroomJs/project.json\"");
-    ExecuteCommand(string.Format("dnu publish \"src/VroomJs/project.json\" --configuration \"{0}\" --no-source -o \"{1}\"", configuration, System.IO.Path.Combine(buildDir, "VroomJs")));
+    ExecuteCommand("dotnet restore src");
+    ExecuteCommand(string.Format("dotnet build \"src/VroomJs/project.json\" --configuration \"{0}\"", configuration));
 });
 
 Task("Test")
@@ -56,12 +59,9 @@ Task("Deploy")
     .Does(() =>
 {
     if(!DirectoryExists(distDir))
-        CreateDirectory(distDir);
+      CreateDirectory(distDir);
 
-    var destination =  System.IO.Path.Combine(distDir, "VroomJs");
-    if(!DirectoryExists(destination))
-        CreateDirectory(destination);
-    CopyDirectory(System.IO.Path.Combine(buildDir, "VroomJs"), destination);
+    ExecuteCommand(string.Format("dotnet pack \"src/VroomJs/project.json\" --configuration \"{0}\" -o \"{1}\"", configuration, distDir, versionPrefix));
 });
 
 //////////////////////////////////////////////////////////////////////

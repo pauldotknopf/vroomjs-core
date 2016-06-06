@@ -26,13 +26,13 @@ namespace VroomJs {
 		}
 
 		public object MakeDelegate(Type type, object[] args) {
-			if (type.BaseType != typeof(MulticastDelegate)) {
-				throw new ApplicationException("Not a delegate.");
+			if (type.GetTypeInfo().BaseType != typeof(MulticastDelegate)) {
+				throw new Exception("Not a delegate.");
 			}
 
 			MethodInfo invoke = type.GetMethod("Invoke");
 			if (invoke == null) {
-				throw new ApplicationException("Not a delegate.");
+				throw new Exception("Not a delegate.");
 			}
 
 			ParameterInfo[] invokeParams = invoke.GetParameters();

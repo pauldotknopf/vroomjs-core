@@ -25,39 +25,37 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Timers;
 
 namespace VroomJs
 {
 	public partial class JsContext : IDisposable
 	{
     	[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-	    static extern IntPtr jscontext_new(int id, HandleRef engine);
+	    static extern IntPtr jscontext_new(int id, IntPtr engine);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		public static extern void jscontext_dispose(HandleRef engine);
+		public static extern void jscontext_dispose(IntPtr engine);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
 		static extern void jscontext_force_gc();
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
-		static extern JsValue jscontext_execute(HandleRef context, [MarshalAs(UnmanagedType.LPWStr)] string str, [MarshalAs(UnmanagedType.LPWStr)] string name);
+		static extern JsValue jscontext_execute(IntPtr context, [MarshalAs(UnmanagedType.LPWStr)] string str, [MarshalAs(UnmanagedType.LPWStr)] string name);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
-		static extern JsValue jscontext_execute_script(HandleRef context, HandleRef script);
+		static extern JsValue jscontext_execute_script(IntPtr context, IntPtr script);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static extern JsValue jscontext_get_global(HandleRef engine);
+		static extern JsValue jscontext_get_global(IntPtr engine);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static extern JsValue jscontext_get_variable(HandleRef engine, [MarshalAs(UnmanagedType.LPWStr)] string name);
+		static extern JsValue jscontext_get_variable(IntPtr engine, [MarshalAs(UnmanagedType.LPWStr)] string name);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static extern JsValue jscontext_set_variable(HandleRef engine, [MarshalAs(UnmanagedType.LPWStr)] string name, JsValue value);
+		static extern JsValue jscontext_set_variable(IntPtr engine, [MarshalAs(UnmanagedType.LPWStr)] string name, JsValue value);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
 		static internal extern JsValue jsvalue_alloc_string([MarshalAs(UnmanagedType.LPWStr)] string str);
@@ -69,7 +67,7 @@ namespace VroomJs
 		static internal extern void jsvalue_dispose(JsValue value);
 
 		[DllImport("VroomJsNative", CallingConvention = CallingConvention.StdCall)]
-		static internal extern JsValue jscontext_invoke(HandleRef engine, IntPtr funcPtr, IntPtr thisPtr, JsValue args);
+		static internal extern JsValue jscontext_invoke(IntPtr engine, IntPtr funcPtr, IntPtr thisPtr, JsValue args);
 
 		private readonly int _id;
 		private readonly JsEngine _engine;
@@ -78,19 +76,19 @@ namespace VroomJs
 			get { return _engine; }
 		}
 
-		internal JsContext(int id, JsEngine engine, HandleRef engineHandle, Action<int> notifyDispose) {
+		internal JsContext(int id, JsEngine engine, IntPtr engineHandle, Action<int> notifyDispose) {
 			_id = id;
 			_engine = engine;
 			_notifyDispose = notifyDispose;
 
             _keepalives = new KeepAliveDictionaryStore();
-			_context = new HandleRef(this, jscontext_new(id, engineHandle));
+			_context = jscontext_new(id, engineHandle);
 			_convert = new JsConvert(this);
 		}
 
-        readonly HandleRef _context;
+        readonly IntPtr _context;
 
-		public HandleRef Handle {
+		public IntPtr Handle {
 			get { return _context; }
 		}
 
@@ -108,23 +106,13 @@ namespace VroomJs
             };
         }
 
-		public object Execute(JsScript script, TimeSpan? executionTimeout = null) {
+		public object Execute(JsScript script) {
 			if (script == null)
 				throw new ArgumentNullException("script");
 
 			CheckDisposed();
 
-			bool executionTimedOut = false;
-			Timer timer = null;
-			if (executionTimeout.HasValue) {
-				timer = new Timer(executionTimeout.Value.TotalMilliseconds);
-				timer.Elapsed += (sender, args) => {
-					timer.Stop();
-					executionTimedOut = true;
-					_engine.TerminateExecution();
-				};
-				timer.Start();
-			}
+
 			object res;
 			try {
 				JsValue v = jscontext_execute_script(_context, script.Handle);
@@ -134,66 +122,39 @@ namespace VroomJs
 #endif
 				jsvalue_dispose(v);
 			} finally {
-				if (executionTimeout.HasValue) {
-					timer.Dispose();
-				}
 			}
-
-			if (executionTimedOut) {
-				throw new JsExecutionTimedOutException();
-			}
-
+            
 			Exception e = res as JsException;
 			if (e != null)
 				throw e;
 			return res;
 		}
 
-		public object Execute(string code, string name = null, TimeSpan? executionTimeout = null) {
-			Stopwatch watch1 = new Stopwatch();
-			Stopwatch watch2 = new Stopwatch();
-
-			watch1.Start();
+		public object Execute(string code, string name = null) {
+		
         	if (code == null)
         		throw new ArgumentNullException("code");
 
         	CheckDisposed();
 
-        	bool executionTimedOut = false;
-        	Timer timer = null;
-        	if (executionTimeout.HasValue) {
-        		timer = new Timer(executionTimeout.Value.TotalMilliseconds);
-        		timer.Elapsed += (sender, args) => {
-        			timer.Stop();
-        			executionTimedOut = true;
-					_engine.TerminateExecution();
-        		};
-				timer.Start();
-        	}
+        	
         	object res;
 			try {
-				watch2.Start();
+			
 				JsValue v = jscontext_execute(_context, code, name ?? "<Unnamed Script>");
-				watch2.Stop();
+	
 				res = _convert.FromJsValue(v);
 #if DEBUG_TRACE_API
         	Console.WriteLine("Cleaning up return value from execution");
 #endif
 				jsvalue_dispose(v);
 			} finally {
-				if (executionTimeout.HasValue) {
-					timer.Dispose();
-				}
+
 			}
 			
-			if (executionTimedOut) {
-				throw new JsExecutionTimedOutException();
-			}
-
         	Exception e = res as JsException;
             if (e != null)
                 throw e;
-			watch1.Stop();
 
 			// Console.WriteLine("Execution time " + watch2.ElapsedTicks + " total time " + watch1.ElapsedTicks);
             return res;
@@ -250,13 +211,14 @@ namespace VroomJs
         }
 
 		public void SetFunction(string name, Delegate func) {
-			WeakDelegate del;
-			if (func.Target != null) {
-				del = new BoundWeakDelegate(func.Target, func.Method.Name);
-			} else {
-				del = new BoundWeakDelegate(func.Method.DeclaringType, func.Method.Name);
-			}
-			SetVariable(name, del);
+            //WeakDelegate del;
+            //if (func.Target != null) {
+            //	del = new BoundWeakDelegate(func.Target, func.Method.Name);
+            //} else {
+            //	del = new BoundWeakDelegate(func.Method.DeclaringType, func.Method.Name);
+            //}
+            //SetVariable(name, del);
+            throw new Exception("...");
 		}
 
 		public void Flush()
@@ -319,7 +281,7 @@ namespace VroomJs
 				throw new ObjectDisposedException("JsContext: engine has been disposed");
 			}
             if (_disposed)
-                throw new ObjectDisposedException("JsContext:" + _context.Handle);
+                throw new ObjectDisposedException("JsContext:" + _context);
         }
 
         ~JsContext()
@@ -345,7 +307,7 @@ namespace VroomJs
 				flags = BindingFlags.Public | BindingFlags.Instance;
 			}
 
-			PropertyInfo pi = type.GetProperty(name, flags | BindingFlags.SetProperty);
+			PropertyInfo pi = type.GetProperty(name, flags);
 			if (pi != null) {
 				pi.SetValue(obj, _convert.FromJsValue(value), null);
 				return true;
@@ -415,7 +377,7 @@ namespace VroomJs
 			}
 
 			// First of all try with a public property (the most common case).
-			PropertyInfo pi = type.GetProperty(name, flags | BindingFlags.GetProperty);
+			PropertyInfo pi = type.GetProperty(name, flags);
 			if (pi != null) {
 				result = pi.GetValue(obj, null);
 				value = _convert.ToJsValue(result);
@@ -423,7 +385,7 @@ namespace VroomJs
 			}
 
 			// try field.
-			FieldInfo fi = type.GetField(name, flags | BindingFlags.GetProperty);
+			FieldInfo fi = type.GetField(name, flags);
 			if (fi != null) {
 				result = fi.GetValue(obj);
 				value = _convert.ToJsValue(result);
@@ -434,7 +396,7 @@ namespace VroomJs
 			// parameter types so we just check if any method with the given name exists
 			// and then keep alive a "weak delegate", i.e., just a name and the target.
 			// The real method will be resolved during the invokation itself.
-			BindingFlags mFlags = flags | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy;
+			BindingFlags mFlags = flags | BindingFlags.FlattenHierarchy;
 
 			// TODO: This is probably slooow.
 			if (type.GetMethods(mFlags).Any(x => x.Name == name)) {
@@ -457,7 +419,7 @@ namespace VroomJs
 #endif
 			// we need to fall back to the prototype verison we set up because v8 won't call an object as a function, it needs
 			// to be from a proper FunctionTemplate.
-			if (!string.IsNullOrEmpty(name) && name.Equals("valueOf", StringComparison.InvariantCultureIgnoreCase)) {
+			if (!string.IsNullOrEmpty(name) && name.Equals("valueOf", StringComparison.CurrentCultureIgnoreCase)) {
 				return JsValue.Empty;
 			}
 			
@@ -546,7 +508,7 @@ namespace VroomJs
 				object[] a = (object[])_convert.FromJsValue(args);
 
 				BindingFlags flags = BindingFlags.Public
-						| BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy;
+						| BindingFlags.FlattenHierarchy;
 
 				if (func.Target != null) {
 					flags |= BindingFlags.Instance;
@@ -564,7 +526,7 @@ namespace VroomJs
 				}
 
 				try {
-					object result = type.InvokeMember(func.MethodName, flags, null, func.Target, a);
+					object result = type.GetMethod(func.MethodName, flags).Invoke(func.Target, a);
 					return _convert.ToJsValue(result);
 				} catch (TargetInvocationException e) {
 					return JsValue.Error(KeepAliveAdd(e.InnerException));

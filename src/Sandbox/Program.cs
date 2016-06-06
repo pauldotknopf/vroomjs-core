@@ -22,9 +22,13 @@ namespace Sandbox
                 {
                     using (JsContext context = js.CreateContext())
                     {
-                        var global = (dynamic)context.GetGlobal();
-                        global.test = true;
-                        object result = context.Execute("test");
+                        // Create a global variable on the JS side.
+                        context.Execute("var x = {'answer':42, 'tellme':function (x) { return x+' '+this.answer; }}");
+                        // Get it and use "dynamic" to tell the compiler to use runtime binding.
+                        dynamic x = context.GetVariable("x");
+                        // Call the method and print the result. This will print:
+                        // "What is the answer to ...? 42"
+                        Console.WriteLine(x.tellme("What is the answer to ...?"));
                     }
                     GC.Collect();
                     js.DumpHeapStats();

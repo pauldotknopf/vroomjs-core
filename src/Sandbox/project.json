@@ -1,25 +1,25 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "1.2.1-*",
   "description": "Sandbox Console Application",
   "authors": [ "Paul" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
-
-  "compilationOptions": {
+  "buildOptions": {
     "emitEntryPoint": true
   },
 
   "dependencies": {
-    "VroomJs": ""
-  },
-
-  "commands": {
-    "Sandbox": "Sandbox"
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.0-rc2-3002702"
+    },
+    "System.Runtime": "4.1.0-rc2-24027",
+    "VroomJs": {
+      "target": "project"
+    }
   },
 
   "frameworks": {
-    "dnx451": { },
-    "net451": { }
+    "netcoreapp1.0": {
+      "imports": "dnxcore50"
+    }
   }
 }

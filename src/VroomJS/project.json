@@ -1,7 +1,13 @@
 {
   "version": "1.2.0-*",
   "title": "VroomJs",
-  "description": "VroomJs",
+  "description": "An embedded V8 engine for .NET CLR and .NET Core.",
+  "packOptions": {
+    "summary": "An embedded V8 engine for .NET CLR and .NET Core.",
+    "tags": [ "javascript", "v8" ],
+    "projectUrl": "https://github.com/pauldotknopf/vroomjs-core",
+    "licenseUrl": "https://github.com/pauldotknopf/vroomjs-core/blob/master/LICENSE"
+  },
   "authors": [ "Paul" ],
   "copyright": "2016",
   "buildOptions": {

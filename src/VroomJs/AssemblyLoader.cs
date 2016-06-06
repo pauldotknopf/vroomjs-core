@@ -63,6 +63,12 @@ namespace VroomJs
         public static void EnsureLoaded()
         {
             if (_isLoaded) return;
+
+            #if DOTNETCORE
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                throw new Exception("EnsureLoaded: May only be used on Windows platforms. For other platforms, you must manually build VroomJsNative.dll");
+            #endif
+
             lock (_lock)
             {
                 if (_isLoaded) return;

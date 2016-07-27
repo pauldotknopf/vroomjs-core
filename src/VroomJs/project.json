@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.2.1-*",
+  "version": "1.2.2-*",
   "description": "An embedded V8 engine for .NET CLR and .NET Core.",
   "packOptions": {
     "summary": "An embedded V8 engine for .NET CLR and .NET Core.",
@@ -18,28 +18,26 @@
     ]
   },
   "frameworks": {
-    "netstandard1.3": {
+    "netstandard1.6": {
       "imports": [
+        "dnxcore50",
         "portable-net451+win8"
       ],
       "dependencies": {
-        "System.Threading": "4.0.11-rc2-*",
-        "System.Collections": "4.0.11-rc2-*",
-        "System.IO.FileSystem": "4.0.1-rc2-*",
-        "System.Reflection": "4.1.0-rc2-*",
-        "System.Runtime.Extensions": "4.1.0-rc2-*",
-        "System.Dynamic.Runtime": "4.0.11-rc2-*",
-        "System.Reflection.TypeExtensions": "4.1.0-rc2-*",
-        "System.Runtime.InteropServices": "4.1.0-rc2-*",
-        "System.Linq": "4.1.0-rc2-*",
-        "System.Linq.Expressions": "4.0.11-rc2-*",
-        "System.Runtime.InteropServices.RuntimeInformation": "4.0.0-rc2-*",
-        "System.Runtime.Handles": "4.0.1-rc2-24027"
+        "NETStandard.Library": "1.6.0",
+        "System.Dynamic.Runtime": "4.0.11",
+        "System.Reflection.TypeExtensions": "4.1.0"
       },
       "buildOptions": { "define": [ "DOTNETCORE" ] }
     },
+    "net40": {
+      "buildOptions": { "define": [ "DOTNETCLR", "DOTNET40" ] }
+    },
     "net45": {
-      "buildOptions": { "define": [ "DOTNETCLR" ] }
+      "buildOptions": { "define": [ "DOTNETCLR" ] },
+      "dependencies": {
+        "System.Dynamic.Runtime": "4.0.0"
+      }
     }
   }
 }

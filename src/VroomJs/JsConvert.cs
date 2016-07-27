@@ -128,10 +128,11 @@ namespace VroomJs
 
             Type type = obj.GetType();
 
+#if !DOTNET40
             // Check for nullable types (we will cast the value out of the box later).
-
             if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 type = type.GetGenericArguments()[0];
+#endif
 
             if (type == typeof(Boolean))
                 return new JsValue { Type = JsValueType.Boolean, I32 = (bool)obj ? 1 : 0 };

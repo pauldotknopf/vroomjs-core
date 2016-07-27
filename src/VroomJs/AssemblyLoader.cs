@@ -29,7 +29,12 @@ namespace VroomJs
 
             var dllPath = Path.Combine(dirName, dllName + ".dll");
 
+#if DOTNETCORE
             using (Stream stm = typeof(JsEngine).GetTypeInfo().Assembly.GetManifestResourceStream("VroomJs." + dllName + "-" + architecture + ".dll"))
+#else
+            using (Stream stm = typeof(JsEngine).Assembly.GetManifestResourceStream("VroomJs." + dllName + "-" + architecture + ".dll"))
+#endif
+
             {
                 try
                 {
@@ -64,10 +69,10 @@ namespace VroomJs
         {
             if (_isLoaded) return;
 
-            #if DOTNETCORE
+#if DOTNETCORE
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 throw new Exception("EnsureLoaded: May only be used on Windows platforms. For other platforms, you must manually build VroomJsNative.dll");
-            #endif
+#endif
 
             lock (_lock)
             {

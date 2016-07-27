@@ -26,11 +26,18 @@ namespace VroomJs {
 		}
 
 		public object MakeDelegate(Type type, object[] args) {
-			if (type.GetTypeInfo().BaseType != typeof(MulticastDelegate)) {
+#if DOTNETCORE
+            if (type.GetTypeInfo().BaseType != typeof(MulticastDelegate)) {
 				throw new Exception("Not a delegate.");
 			}
+#else
+            if (type.BaseType != typeof(MulticastDelegate))
+            {
+                throw new Exception("Not a delegate.");
+            }
+#endif
 
-			MethodInfo invoke = type.GetMethod("Invoke");
+            MethodInfo invoke = type.GetMethod("Invoke");
 			if (invoke == null) {
 				throw new Exception("Not a delegate.");
 			}
@@ -60,7 +67,7 @@ namespace VroomJs {
 			return Expression.Lambda(type, callExpression, parameters).Compile();
 		}
 
-		#region IDisposable implementation
+#region IDisposable implementation
 
         bool _disposed;
 
@@ -86,6 +93,6 @@ namespace VroomJs {
 				Dispose(false);
 		}
 
-		#endregion
+#endregion
 	}
 }

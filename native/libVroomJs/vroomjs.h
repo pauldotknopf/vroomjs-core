@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <iostream>
+#include <string.h> 
+//needed for memset
 
 using namespace v8;
 
@@ -181,7 +183,7 @@ public:
     inline jsvalue CallGetPropertyValue(int32_t context, int32_t id, uint16_t* name) {
 		if (keepalive_get_property_value_ == NULL) {
 			jsvalue v;
-			ZeroMemory(&v, sizeof(jsvalue));
+			//ZeroMemory(&v, sizeof(jsvalue));
 			v.type == JSVALUE_TYPE_NULL;
 			return v;
 		}
@@ -191,7 +193,8 @@ public:
     inline jsvalue CallSetPropertyValue(int32_t context, int32_t id, uint16_t* name, jsvalue value) {
 		if (keepalive_set_property_value_ == NULL) {
 			jsvalue v;
-			ZeroMemory(&v, sizeof(jsvalue));
+			//ZeroMemory(&v, sizeof(jsvalue));
+			memset(&v, 0, sizeof(jsvalue));
 			v.type == JSVALUE_TYPE_NULL;
 			return v;
 		}
@@ -200,7 +203,8 @@ public:
 	inline jsvalue CallValueOf(int32_t context, int32_t id) { 
 		if (keepalive_valueof_ == NULL) {
 			jsvalue v;
-			ZeroMemory(&v, sizeof(jsvalue));
+			//ZeroMemory(&v, sizeof(jsvalue));
+			memset(&v, 0, sizeof(jsvalue));
 			v.type == JSVALUE_TYPE_NULL;
 			return v;
 		}
@@ -209,7 +213,8 @@ public:
     inline jsvalue CallInvoke(int32_t context, int32_t id, jsvalue args) { 
 		if (keepalive_invoke_ == NULL) {
 			jsvalue v;
-			ZeroMemory(&v, sizeof(jsvalue));
+			//ZeroMemory(&v, sizeof(jsvalue));
+			memset(&v, 0, sizeof(jsvalue));
 			v.type == JSVALUE_TYPE_NULL;
 			return v;
 		}
@@ -218,7 +223,8 @@ public:
 	inline jsvalue CallDeleteProperty(int32_t context, int32_t id, uint16_t* name) {
 		if (keepalive_delete_property_ == NULL) {
 			jsvalue v;
-			ZeroMemory(&v, sizeof(jsvalue));
+			//ZeroMemory(&v, sizeof(jsvalue));
+			memset(&v, 0, sizeof(jsvalue));
 			v.type == JSVALUE_TYPE_NULL;
 			return v;
 		}
@@ -228,7 +234,8 @@ public:
 	inline jsvalue CallEnumerateProperties(int32_t context, int32_t id) {
 		if (keepalive_enumerate_properties_ == NULL) {
 			jsvalue v;
-			ZeroMemory(&v, sizeof(jsvalue));
+			//ZeroMemory(&v, sizeof(jsvalue));
+			memset(&v, 0, sizeof(jsvalue));
 			v.type == JSVALUE_TYPE_NULL;
 			return v;
 		}

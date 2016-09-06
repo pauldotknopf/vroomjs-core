@@ -184,6 +184,7 @@ public:
 		if (keepalive_get_property_value_ == NULL) {
 			jsvalue v;
 			//ZeroMemory(&v, sizeof(jsvalue));
+			memset(&v, 0, sizeof(jsvalue));
 			v.type == JSVALUE_TYPE_NULL;
 			return v;
 		}
